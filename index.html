@@ -1,41 +1,81 @@
 <!doctype html>
 <html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8">
     <meta name="referrer" content="never" />
     <title>Vue.js Poster Shop</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="/public/favicon.ico">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,700,800" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,700,800" rel="stylesheet"
+        type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Baloo+Bhaina" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/public/style.css">
 </head>
-<body>
-<div id="app">
-    <div class="header">
-        <div class="container">
-            <div class="title">
-                <img src="public/logo.png">
-                <h1>Vue.js Poster Shop</h1>
-            </div>
-        </div>
-    </div>
-    <div class="main container">
-        <div class="products">
-            <p>Products go here.</p>
-        </div>
-        <div class="cart">
-            <h2>Shopping Cart</h2>
-            <div>
-                Total: $0.00
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Scripts -->
-<script src="/reload/reload.js"></script>
-<script type="text/javascript" src="public/script.js"></script>
+<body>
+    <div id="app" v-cloak >
+        <div id='iniloading' >Loading...!</div>
+        <div class="header">
+            <div class="container">
+                <div class="title">
+                    <img src="public/logo.png">
+                    <h1>Vue.js Poster Shop</h1>
+                </div>
+                <form class="search-bar" @submit.prevent="onSubmit">
+                    <input type="text" placeholder="search for posters" v-model="search">
+                    <input type="submit" value="search" class="btn">
+                </form>
+                <p>Try serching <em>cat, dog, flower</em></p>
+            </div>
+        </div>
+        <div class="main container">
+            <div class="products">
+                <!-- <p>Products go here.</p> -->
+                <div class="search-results" v-show="loading">Loading...</em></div>
+                <div class="search-results" v-show="products.length && !loading">Found {{ results.length }} results for
+                    search term <em>{{ lastSearch }}.</em></div>
+                <div class="product" v-for="product in products" :key="product.id">
+                    <div>
+                        <div class="product-image">
+                            <img :src="product.thumb">
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="product-title">{{product.title}}</h4>
+                        <p class="product-price"><strong>{{ product.price | currency }}</strong></p>
+                        <button v-on:click="addToCart(product)" class="add-to-cart btn">Add to Cart</button>
+                    </div>
+                </div>
+                <div id="product-list-bottom" >No more items!</div>
+            </div>
+            <div class="cart">
+                <h2>Shopping Cart</h2>
+                <div class="empty-item" v-if="!cart.length">No items in the cart!</div>
+                <transition-group tag="ul" name="fade">
+                    <li v-for="item in cart" :key="item.id" class="cart-item">
+                        <div class="item-title">{{ item.title}}</div>
+                        <span class="item-qty">{{ item.price | currency }} x {{ item.qty }} </span>
+                        <button class="btn" @click="increment(item)">+</button><button class="btn"
+                            @click="decrement(item)">-</button>
+                    </li>
+                </transition-group>
+                <transition name="fade">
+                    <div v-if="cart.length" class="cart-total">
+                        Total: {{ total | currency }}
+                    </div>
+                </transition>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/reload/reload.js"></script>
+    <script type="text/javascript" src="node_modules/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="node_modules/vue-resource/dist/vue-resource.js"></script>
+    <script type="text/javascript" src="node_modules/scrollmonitor/scrollMonitor.js" ></script>
+    <script type="text/javascript" src="public/script.js"></script>
 
 </body>
+
 </html>
